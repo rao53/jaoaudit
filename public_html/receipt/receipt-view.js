@@ -19,13 +19,17 @@ async function loadReceipt() {
   const params = new URLSearchParams(window.location.search);
   const id = params.get("id");
   if (!id) {
-    contentEl.textContent = "Missing receipt id.";
+    window.location.href = "/receipt/dashboard.html";
     return;
   }
 
   const response = await fetch(`/api/receipt/receipts/${id}`);
   if (!response.ok) {
-    contentEl.textContent = "Unable to load receipt.";
+    const data = await response.json().catch(() => ({}));
+    contentEl.innerHTML = `
+      <div class="line"><strong>${data.error || "Receipt not found."}</strong></div>
+      <div class="line">Please return to the dashboard and select a receipt.</div>
+    `;
     return;
   }
 

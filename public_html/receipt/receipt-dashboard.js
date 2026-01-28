@@ -87,7 +87,7 @@ form.addEventListener("submit", async (event) => {
   }
 
   const data = await response.json();
-  messageEl.textContent = `Receipt #${data.receipt.receipt_number} created.`;
+  messageEl.innerHTML = `Receipt #${data.receipt.receipt_number} created. <a href="/receipt/receipt.html?id=${data.receipt.receipt_id}">View</a>`;
   form.reset();
   form.receiptDate.value = formatToday();
   await loadReceipts();

@@ -1,0 +1,12 @@
+{
+  "name": "jaoaudit",
+  "private": true,
+  "version": "1.0.0",
+  "description": "JaoAudit site with Vercel-friendly receipt app",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cookie": "^0.6.0",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.11.5"
+  }
+}

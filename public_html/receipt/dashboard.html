@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Receipt Dashboard</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="nav">
+        <h1>Receipt Dashboard</h1>
+        <button id="logout-btn" class="secondary">Logout</button>
+      </div>
+      <p class="subtitle">Create receipts and view recent history.</p>
+
+      <form id="receipt-form">
+        <div class="row">
+          <div>
+            <label for="receipt-date">Date</label>
+            <input id="receipt-date" name="receiptDate" type="text" />
+          </div>
+          <div>
+            <label for="email-address">Email</label>
+            <input id="email-address" name="emailAddress" type="email" required />
+          </div>
+        </div>
+        <div>
+          <label for="received-from">Received From</label>
+          <input id="received-from" name="receivedFrom" type="text" required />
+        </div>
+        <div>
+          <label for="company-rep">Designated Address</label>
+          <input id="company-rep" name="companyRep" type="text" required />
+        </div>
+        <div>
+          <label for="company-rep-2">Designated Address (line 2)</label>
+          <input id="company-rep-2" name="companyRep2" type="text" />
+        </div>
+        <div>
+          <label for="sum-of">In The Sum Of</label>
+          <input id="sum-of" name="sumOf" type="text" required />
+        </div>
+        <div>
+          <label for="sum-of-2">In The Sum Of (line 2)</label>
+          <input id="sum-of-2" name="sumOf2" type="text" />
+        </div>
+        <div>
+          <label for="payment-for">Being Payment For</label>
+          <textarea id="payment-for" name="paymentFor" rows="2" required></textarea>
+        </div>
+        <div>
+          <label for="amount-involved">Cheque No/Amount</label>
+          <input id="amount-involved" name="amountInvolved" type="text" required />
+        </div>
+
+        <button type="submit">Create Receipt</button>
+        <div id="receipt-message" class="success"></div>
+        <div id="receipt-error" class="error"></div>
+      </form>
+
+      <div class="receipt-list">
+        <h2>Recent Receipts</h2>
+        <div id="receipt-list"></div>
+      </div>
+    </div>
+
+    <script src="./receipt-dashboard.js"></script>
+  </body>
+</html>

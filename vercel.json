@@ -1,7 +1,9 @@
 {
+  "redirects": [
+    { "source": "/receipt", "destination": "/receipt/", "permanent": false }
+  ],
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/$1" },
-    { "source": "/receipt", "destination": "/public_html/receipt/index.html" },
     { "source": "/receipt/(.*)", "destination": "/public_html/receipt/$1" },
     { "source": "/", "destination": "/public_html/index.html" },
     { "source": "/(.*)", "destination": "/public_html/$1" }

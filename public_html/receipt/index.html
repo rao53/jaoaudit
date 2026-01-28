@@ -4,14 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Receipt App Login</title>
-    <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="/receipt/style.css" />
   </head>
   <body>
     <div class="container">
       <h1>Receipt App Login</h1>
       <p class="subtitle">Use your admin credentials to manage receipts.</p>
 
-      <form id="login-form">
+      <form id="login-form" method="post" action="/receipt/">
         <div>
           <label for="username">Username</label>
           <input id="username" name="username" type="text" required />
@@ -25,6 +25,6 @@
       <div id="login-error" class="error"></div>
     </div>
 
-    <script src="./receipt-login.js"></script>
+    <script src="/receipt/receipt-login.js"></script>
   </body>
 </html>

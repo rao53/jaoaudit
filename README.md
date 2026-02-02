@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # jaoaudit
 
 Legacy cPanel site moved into GitHub. The main site lives under `public_html/`.
@@ -26,3 +27,6 @@ Setup steps:
    - `POST /api/receipt/setup`
    - Body: `{ "token": "<SETUP_TOKEN>", "username": "<admin>", "password": "<password>" }`
 3. Use the app at `/receipt`
+=======
+# my-repo
+>>>>>>> db30731 (Initial commit)

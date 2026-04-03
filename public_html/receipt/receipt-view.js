@@ -49,7 +49,7 @@ async function loadReceipt() {
   }
 
   try {
-    const response = await fetch(`/api/receipt/receipts/${id}`);
+    const response = await fetch(`/api/receipt/receipts?id=${id}`);
     if (!response.ok) {
       const data = await response.json().catch(() => ({}));
       contentEl.textContent = "";

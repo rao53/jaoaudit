@@ -3,68 +3,89 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Receipt Dashboard</title>
+    <title>Receipt Dashboard — J.A. Olawin & Co.</title>
+    <link rel="icon" type="image/svg+xml" href="/receipt/favicon.svg" />
     <link rel="stylesheet" href="/receipt/style.css" />
   </head>
   <body>
     <div class="container">
       <div class="nav">
-        <h1>Receipt Dashboard</h1>
+        <div class="nav-brand">
+          <h1>Receipt Management</h1>
+          <span class="nav-company">J.A. Olawin &amp; Co.</span>
+        </div>
         <button id="logout-btn" class="secondary">Logout</button>
       </div>
-      <p class="subtitle">Create receipts and view recent history.</p>
 
-      <form id="receipt-form">
-        <div class="row">
-          <div>
-            <label for="receipt-date">Date</label>
-            <input id="receipt-date" name="receiptDate" type="text" />
+      <form id="receipt-form" novalidate>
+        <fieldset class="form-section">
+          <legend>Receipt Details</legend>
+          <div class="row">
+            <div class="form-group">
+              <label for="receipt-date">Date</label>
+              <input id="receipt-date" name="receiptDate" type="date" />
+            </div>
+            <div class="form-group">
+              <label for="email-address">Email</label>
+              <input id="email-address" name="emailAddress" type="email" required />
+            </div>
           </div>
-          <div>
-            <label for="email-address">Email</label>
-            <input id="email-address" name="emailAddress" type="email" required />
-          </div>
-        </div>
-        <div>
-          <label for="received-from">Received From</label>
-          <input id="received-from" name="receivedFrom" type="text" required />
-        </div>
-        <div>
-          <label for="company-rep">Designated Address</label>
-          <input id="company-rep" name="companyRep" type="text" required />
-        </div>
-        <div>
-          <label for="company-rep-2">Designated Address (line 2)</label>
-          <input id="company-rep-2" name="companyRep2" type="text" />
-        </div>
-        <div>
-          <label for="sum-of">In The Sum Of</label>
-          <input id="sum-of" name="sumOf" type="text" required />
-        </div>
-        <div>
-          <label for="sum-of-2">In The Sum Of (line 2)</label>
-          <input id="sum-of-2" name="sumOf2" type="text" />
-        </div>
-        <div>
-          <label for="payment-for">Being Payment For</label>
-          <textarea id="payment-for" name="paymentFor" rows="2" required></textarea>
-        </div>
-        <div>
-          <label for="amount-involved">Cheque No/Amount</label>
-          <input id="amount-involved" name="amountInvolved" type="text" required />
-        </div>
+        </fieldset>
 
-        <button type="submit">Create Receipt</button>
-        <div id="receipt-message" class="success"></div>
-        <div id="receipt-error" class="error"></div>
+        <fieldset class="form-section">
+          <legend>Payer Information</legend>
+          <div class="form-group">
+            <label for="received-from">Received From</label>
+            <input id="received-from" name="receivedFrom" type="text" required />
+          </div>
+          <div class="form-group">
+            <label for="company-rep">Designated Address</label>
+            <textarea id="company-rep" name="companyRep" rows="2" required placeholder="Line 1&#10;Line 2 (optional)"></textarea>
+          </div>
+        </fieldset>
+
+        <fieldset class="form-section">
+          <legend>Payment Details</legend>
+          <div class="form-group">
+            <label for="sum-of">In The Sum Of</label>
+            <textarea id="sum-of" name="sumOf" rows="2" required placeholder="Line 1&#10;Line 2 (optional)"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="payment-for">Being Payment For</label>
+            <textarea id="payment-for" name="paymentFor" rows="2" required></textarea>
+          </div>
+          <div class="form-group">
+            <label for="amount-involved">Cheque No / Amount</label>
+            <div class="input-group">
+              <span class="input-prefix">₦</span>
+              <input id="amount-involved" name="amountInvolved" type="text" required />
+            </div>
+          </div>
+        </fieldset>
+
+        <button type="submit" id="create-btn">Create Receipt</button>
       </form>
 
+      <div id="toast" class="toast" role="status" aria-live="polite"></div>
+      <div id="receipt-error" class="alert-error" role="alert" aria-live="polite"></div>
+
       <div class="receipt-list">
-        <h2>Recent Receipts</h2>
+        <div class="list-header">
+          <h2>Recent Receipts</h2>
+          <input
+            type="search"
+            id="receipt-search"
+            class="search-input"
+            placeholder="Filter receipts..."
+            aria-label="Filter receipts"
+          />
+        </div>
         <div id="receipt-list"></div>
+        <div id="receipt-list-footer" class="list-footer"></div>
       </div>
     </div>
 
+    <script src="/receipt/auth-guard.js"></script>
     <script src="/receipt/receipt-dashboard.js"></script>
   </body>
 </html>

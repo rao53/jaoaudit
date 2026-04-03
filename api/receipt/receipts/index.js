@@ -6,6 +6,7 @@ const {
   parseDateInput,
 } = require("../_utils");
 const { getSession } = require("../_auth");
+const { sendReceiptEmail } = require("../_email");
 
 function requireSession(req, res) {
   const session = getSession(req);
@@ -23,27 +24,68 @@ module.exports = async function handler(req, res) {
   }
 
   if (req.method === "GET") {
-    const limit = Math.min(Number(req.query.limit || 50) || 50, 200);
-    const result = await query(
-      `
-        SELECT
-          receipt_id,
-          receipt_date,
-          received_from,
-          company_rep,
-          email_address,
-          in_the_sum_of,
-          being_payment_for,
-          amount_involved,
-          LPAD(receipt_id::text, 4, '0') AS receipt_number
-        FROM receiptinfo
-        ORDER BY receipt_id DESC
-        LIMIT $1
-      `,
-      [limit]
-    );
+    const singleId = Number(req.query.id);
+    if (singleId) {
+      try {
+        const result = await query(
+          `
+            SELECT
+              receipt_id, receipt_date, received_from, company_rep,
+              email_address, in_the_sum_of, being_payment_for, amount_involved,
+              LPAD(receipt_id::text, 4, '0') AS receipt_number
+            FROM receiptinfo WHERE receipt_id = $1
+          `,
+          [singleId]
+        );
+        if (result.rows.length === 0) {
+          sendJson(res, 404, { error: "Receipt not found." });
+          return;
+        }
+        sendJson(res, 200, { ok: true, receipt: result.rows[0] });
+      } catch (err) {
+        console.error("[receipt] Failed to load receipt:", err.message || err);
+        sendJson(res, 500, { error: "Failed to load receipt." });
+      }
+      return;
+    }
 
-    sendJson(res, 200, { ok: true, receipts: result.rows });
+    try {
+      const limit = Math.min(Number(req.query.limit || 20) || 20, 200);
+      const offset = Math.max(Number(req.query.offset || 0) || 0, 0);
+      const result = await query(
+        `
+          SELECT
+            receipt_id,
+            receipt_date,
+            received_from,
+            company_rep,
+            email_address,
+            in_the_sum_of,
+            being_payment_for,
+            amount_involved,
+            LPAD(receipt_id::text, 4, '0') AS receipt_number
+          FROM receiptinfo
+          ORDER BY receipt_id DESC
+          LIMIT $1 OFFSET $2
+        `,
+        [limit, offset]
+      );
+
+      const countResult = await query(
+        "SELECT COUNT(*)::int AS total FROM receiptinfo"
+      );
+      const total = countResult.rows[0].total;
+
+      sendJson(res, 200, {
+        ok: true,
+        receipts: result.rows,
+        total,
+        limit,
+        offset,
+      });
+    } catch {
+      sendJson(res, 500, { error: "Failed to load receipts." });
+    }
     return;
   }
 
@@ -68,6 +110,11 @@ module.exports = async function handler(req, res) {
         !amountInvolved
       ) {
         sendJson(res, 400, { error: "All required fields must be filled." });
+        return;
+      }
+
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailAddress)) {
+        sendJson(res, 400, { error: "Please provide a valid email address." });
         return;
       }
 
@@ -112,7 +159,15 @@ module.exports = async function handler(req, res) {
         ]
       );
 
-      sendJson(res, 201, { ok: true, receipt: result.rows[0] });
+      const created = result.rows[0];
+
+      try {
+        await sendReceiptEmail(created);
+      } catch (err) {
+        console.error("[email] Send failed:", err.message || err);
+      }
+
+      sendJson(res, 201, { ok: true, receipt: created });
     } catch (error) {
       sendJson(res, 500, { error: "Failed to create receipt." });
     }

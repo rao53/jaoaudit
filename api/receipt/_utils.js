@@ -1,7 +1,16 @@
+const MAX_BODY_BYTES = 64 * 1024;
+
 function readJson(req) {
   return new Promise((resolve, reject) => {
     let body = "";
+    let bytes = 0;
     req.on("data", (chunk) => {
+      bytes += Buffer.byteLength(chunk);
+      if (bytes > MAX_BODY_BYTES) {
+        req.destroy();
+        reject(new Error("Request body too large"));
+        return;
+      }
       body += chunk;
     });
     req.on("end", () => {

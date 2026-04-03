@@ -3,30 +3,41 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Receipt</title>
+    <title>Receipt — J.A. Olawin & Co.</title>
+    <link rel="icon" type="image/svg+xml" href="/receipt/favicon.svg" />
     <link rel="stylesheet" href="/receipt/style.css" />
   </head>
   <body>
     <div class="container">
       <div class="receipt-view" id="receipt-view">
-        <header>
+        <header class="receipt-header">
           <img
-            src="../receiptApp/images/jaoreceiptheader.jpg"
-            alt="JaoAudit Header"
-            height="60"
+            src="/receiptApp/images/jaoreceiptheader.jpg"
+            alt="J.A. Olawin & Co. — Chartered Accountants"
+            class="receipt-header-img"
           />
-          <h2>RECEIPT</h2>
+          <h2 class="receipt-title">RECEIPT</h2>
         </header>
 
-        <div id="receipt-content"></div>
+        <div id="receipt-content">
+          <div class="receipt-skeleton">
+            <div class="skel-line skel-medium"></div>
+            <div class="skel-line skel-wide"></div>
+            <div class="skel-line skel-wide"></div>
+            <div class="skel-line skel-medium"></div>
+            <div class="skel-line skel-narrow"></div>
+          </div>
+        </div>
 
         <div class="actions">
           <button id="print-btn">Print / Save PDF</button>
-          <a href="/receipt/dashboard.html">Back to Dashboard</a>
+          <button id="delete-btn" class="btn-delete">Delete Receipt</button>
+          <a href="/receipt/dashboard.html" class="back-link">&larr; Back to Dashboard</a>
         </div>
       </div>
     </div>
 
+    <script src="/receipt/auth-guard.js"></script>
     <script src="/receipt/receipt-view.js"></script>
   </body>
 </html>

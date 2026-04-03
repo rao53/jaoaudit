@@ -1,9 +1,8 @@
-<<<<<<< HEAD
 # jaoaudit
 
 Legacy cPanel site moved into GitHub. The main site lives under `public_html/`.
 
-## What’s here
+## What's here
 - `public_html/` - site root (HTML/CSS/JS/images + PHP includes)
 - `public_html/receiptApp/` - PHP-based receipt app and related assets
 - `public_html/receipt/` - Vercel-friendly receipt UI (static + API routes)
@@ -27,6 +26,3 @@ Setup steps:
    - `POST /api/receipt/setup`
    - Body: `{ "token": "<SETUP_TOKEN>", "username": "<admin>", "password": "<password>" }`
 3. Use the app at `/receipt`
-=======
-# my-repo
->>>>>>> db30731 (Initial commit)

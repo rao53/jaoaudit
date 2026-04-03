@@ -4,6 +4,7 @@ const {
   sendJson,
   normalizeText,
   parseDateInput,
+  checkFieldLengths,
 } = require("../_utils");
 const { getSession } = require("../_auth");
 const { sendReceiptEmail } = require("../_email");
@@ -92,6 +93,13 @@ module.exports = async function handler(req, res) {
   if (req.method === "POST") {
     try {
       const body = await readJson(req);
+
+      const lengthError = checkFieldLengths(body);
+      if (lengthError) {
+        sendJson(res, 400, { error: lengthError });
+        return;
+      }
+
       const receivedFrom = normalizeText(body.receivedFrom);
       const companyRep = normalizeText(body.companyRep);
       const companyRep2 = normalizeText(body.companyRep2);

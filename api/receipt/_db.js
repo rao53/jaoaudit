@@ -17,6 +17,7 @@ function getPool() {
   pool = new Pool({
     connectionString,
     max: 1,
+    // Neon/Vercel Postgres requires rejectUnauthorized:false for their certificates
     ssl: { rejectUnauthorized: false },
   });
 

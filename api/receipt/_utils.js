@@ -60,4 +60,31 @@ function parseDateInput(value) {
   return new Date();
 }
 
-module.exports = { readJson, sendJson, normalizeText, parseDateInput };
+const FIELD_LIMITS = {
+  receivedFrom: 500,
+  companyRep: 500,
+  companyRep2: 500,
+  emailAddress: 254,
+  sumOf: 500,
+  sumOf2: 500,
+  paymentFor: 1000,
+  amountInvolved: 100,
+};
+
+function checkFieldLengths(body) {
+  for (const [field, max] of Object.entries(FIELD_LIMITS)) {
+    const val = body[field];
+    if (typeof val === "string" && val.length > max) {
+      return `${field} exceeds maximum length of ${max} characters.`;
+    }
+  }
+  return null;
+}
+
+module.exports = {
+  readJson,
+  sendJson,
+  normalizeText,
+  parseDateInput,
+  checkFieldLengths,
+};

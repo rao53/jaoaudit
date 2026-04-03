@@ -8,6 +8,11 @@ module.exports = async function handler(req, res) {
     return;
   }
 
+  if (process.env.SETUP_DISABLED === "true") {
+    sendJson(res, 403, { error: "Setup is disabled." });
+    return;
+  }
+
   const setupToken = process.env.SETUP_TOKEN;
   if (!setupToken) {
     sendJson(res, 500, { error: "SETUP_TOKEN is not configured." });

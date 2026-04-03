@@ -1,5 +1,15 @@
 const { Resend } = require("resend");
 
+function escapeHtml(str) {
+  if (!str) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 function formatDate(raw) {
   try {
     const d = new Date(raw);
@@ -16,14 +26,14 @@ function formatDate(raw) {
 
 function buildReceiptHTML(r) {
   const rows = [
-    ["Receipt No", r.receipt_number],
-    ["Date", formatDate(r.receipt_date)],
-    ["Received From", r.received_from],
-    ["Email", r.email_address],
-    ["Of", (r.company_rep || "").replace(/\n/g, "<br>")],
-    ["The Sum Of", (r.in_the_sum_of || "").replace(/\n/g, "<br>")],
-    ["Being Payment For", r.being_payment_for],
-    ["Cheque No / Cash", r.amount_involved],
+    ["Receipt No", escapeHtml(r.receipt_number)],
+    ["Date", escapeHtml(formatDate(r.receipt_date))],
+    ["Received From", escapeHtml(r.received_from)],
+    ["Email", escapeHtml(r.email_address)],
+    ["Of", escapeHtml(r.company_rep).replace(/\n/g, "<br>")],
+    ["The Sum Of", escapeHtml(r.in_the_sum_of).replace(/\n/g, "<br>")],
+    ["Being Payment For", escapeHtml(r.being_payment_for)],
+    ["Cheque No / Cash", escapeHtml(r.amount_involved)],
   ];
 
   const tableRows = rows
@@ -54,7 +64,7 @@ function buildReceiptHTML(r) {
   `;
 }
 
-async function sendReceiptEmail(receipt) {
+async function sendReceiptEmail(receipt, options = {}) {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
     console.log("[email] RESEND_API_KEY not set, skipping email");
@@ -76,7 +86,7 @@ async function sendReceiptEmail(receipt) {
     const result = await resend.emails.send({
       from: `J.A. Olawin & Co. <${fromEmail}>`,
       to: [receipt.email_address],
-      subject: `Receipt #${receipt.receipt_number} \u2014 J.A. Olawin & Co.`,
+      subject: `${options.updated ? "Updated " : ""}Receipt #${receipt.receipt_number} \u2014 J.A. Olawin & Co.`,
       html: buildReceiptHTML(receipt),
     });
     console.log("[email] Sent successfully:", JSON.stringify(result));

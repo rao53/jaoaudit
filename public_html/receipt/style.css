@@ -288,6 +288,23 @@ button.secondary:hover {
   text-decoration: underline;
 }
 
+.edit-form {
+  display: grid;
+  gap: 12px;
+}
+
+.edit-form input,
+.edit-form textarea {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.edit-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
 /* ── Dashboard ──────────────────────────────────────────── */
 
 .nav-brand {

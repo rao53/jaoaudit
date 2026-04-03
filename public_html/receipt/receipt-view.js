@@ -125,8 +125,10 @@ deleteBtn.addEventListener("click", async () => {
   if (!confirm("Delete this receipt? This cannot be undone.")) return;
 
   try {
-    const response = await fetch(`/api/receipt/receipts/${id}`, {
-      method: "DELETE",
+    const response = await fetch("/api/receipt/delete-receipt", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ receiptId: Number(id) }),
     });
     if (!response.ok) {
       const data = await response.json().catch(() => ({}));

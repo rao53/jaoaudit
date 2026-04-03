@@ -327,8 +327,10 @@ async function deleteReceipt(id, number) {
   if (!confirm(`Delete receipt #${number}? This cannot be undone.`)) return;
 
   try {
-    const response = await fetch(`/api/receipt/receipts/${id}`, {
-      method: "DELETE",
+    const response = await fetch("/api/receipt/delete-receipt", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ receiptId: id }),
     });
     if (!response.ok) {
       const data = await response.json().catch(() => ({}));

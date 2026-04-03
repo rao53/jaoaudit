@@ -3,12 +3,8 @@ async function ensureAuth() {
     const response = await fetch("/api/receipt/me");
     if (!response.ok) {
       window.location.href = "/receipt/index.html";
-      throw new Error("not authenticated");
     }
-  } catch (err) {
-    if (err.message !== "not authenticated") {
-      window.location.href = "/receipt/index.html";
-    }
-    throw err;
+  } catch {
+    window.location.href = "/receipt/index.html";
   }
 }

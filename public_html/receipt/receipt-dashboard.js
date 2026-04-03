@@ -74,7 +74,7 @@ function splitLines(value) {
 }
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const AMOUNT_RE = /^[A-Za-z₦$€£]*\s*[\d,]+(\.\d{1,2})?$/;
+const AMOUNT_RE = /^[A-Za-z₦$€£]*\s*[\d,]+(\.\d{1,2})?$|^\d[\d,]*(\.\d{1,2})?$/;
 
 function setFieldError(field, message) {
   const group = field.closest(".form-group");
@@ -124,9 +124,25 @@ function validateForm() {
 form.addEventListener("input", (e) => {
   const field = e.target;
   if (field.classList.contains("field-error") && field.value.trim()) {
-    field.classList.remove("field-error");
-    const hint = field.closest(".form-group")?.querySelector(".field-hint");
-    if (hint) hint.remove();
+    clearFieldError(field);
+  }
+});
+
+form.emailAddress.addEventListener("blur", () => {
+  const v = form.emailAddress.value.trim();
+  if (v && !EMAIL_RE.test(v)) {
+    setFieldError(form.emailAddress, "Please enter a valid email address");
+  } else if (v) {
+    clearFieldError(form.emailAddress);
+  }
+});
+
+form.amountInvolved.addEventListener("blur", () => {
+  const v = form.amountInvolved.value.trim();
+  if (v && !AMOUNT_RE.test(v)) {
+    setFieldError(form.amountInvolved, "Please enter a valid amount (e.g. 50,000 or \u20a650,000.00)");
+  } else if (v) {
+    clearFieldError(form.amountInvolved);
   }
 });
 
@@ -158,7 +174,8 @@ function renderReceiptCard(receipt) {
 
   if (receipt.amount_involved) {
     const amt = document.createElement("span");
-    amt.textContent = receipt.amount_involved;
+    const raw = receipt.amount_involved;
+    amt.textContent = /^[₦N]/.test(raw) ? raw : "\u20a6" + raw;
     meta.appendChild(amt);
   }
   if (receipt.email_address) {
@@ -390,7 +407,11 @@ logoutBtn.addEventListener("click", async () => {
 });
 
 (async () => {
-  await ensureAuth();
-  form.receiptDate.value = todayISO();
-  await loadReceipts();
+  try {
+    await ensureAuth();
+    form.receiptDate.value = todayISO();
+    await loadReceipts();
+  } catch {
+    /* auth redirect in progress */
+  }
 })();

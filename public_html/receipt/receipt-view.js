@@ -85,7 +85,10 @@ async function loadReceipt() {
     contentEl.appendChild(makeLine("Of:", r.company_rep));
     contentEl.appendChild(makeLine("The Sum of:", r.in_the_sum_of));
     contentEl.appendChild(makeLine("Being Payment for:", r.being_payment_for));
-    contentEl.appendChild(makeLine("Cheque No / Cash:", r.amount_involved));
+    const displayAmount = r.amount_involved && !/^[₦N]/.test(r.amount_involved)
+      ? "\u20a6" + r.amount_involved
+      : r.amount_involved;
+    contentEl.appendChild(makeLine("Cheque No / Cash:", displayAmount));
 
     const sigBlock = document.createElement("div");
     sigBlock.className = "receipt-signature";
@@ -137,6 +140,10 @@ deleteBtn.addEventListener("click", async () => {
 });
 
 (async () => {
-  await ensureAuth();
-  await loadReceipt();
+  try {
+    await ensureAuth();
+    await loadReceipt();
+  } catch {
+    /* auth redirect in progress */
+  }
 })();

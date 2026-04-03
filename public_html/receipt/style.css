@@ -346,6 +346,29 @@ button.secondary:hover {
   margin-top: 4px;
 }
 
+.input-group {
+  display: flex;
+}
+
+.input-prefix {
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  background: var(--bg-page);
+  border: 1px solid var(--border);
+  border-right: none;
+  border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.input-group input {
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  flex: 1;
+  min-width: 0;
+}
+
 .toast {
   position: fixed;
   bottom: 24px;

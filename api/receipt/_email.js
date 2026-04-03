@@ -52,17 +52,34 @@ function buildReceiptHTML(r) {
 
 async function sendReceiptEmail(receipt) {
   const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey || !receipt.email_address) return;
+  if (!apiKey) {
+    console.log("[email] RESEND_API_KEY not set, skipping email");
+    return;
+  }
+  if (!receipt.email_address) {
+    console.log("[email] No email address on receipt, skipping");
+    return;
+  }
 
   const fromEmail = process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev";
   const resend = new Resend(apiKey);
 
-  await resend.emails.send({
-    from: `J.A. Olawin & Co. <${fromEmail}>`,
-    to: [receipt.email_address],
-    subject: `Receipt #${receipt.receipt_number} — J.A. Olawin & Co.`,
-    html: buildReceiptHTML(receipt),
-  });
+  console.log(
+    `[email] Sending receipt #${receipt.receipt_number} to ${receipt.email_address} from ${fromEmail}`
+  );
+
+  try {
+    const result = await resend.emails.send({
+      from: `J.A. Olawin & Co. <${fromEmail}>`,
+      to: [receipt.email_address],
+      subject: `Receipt #${receipt.receipt_number} \u2014 J.A. Olawin & Co.`,
+      html: buildReceiptHTML(receipt),
+    });
+    console.log("[email] Sent successfully:", JSON.stringify(result));
+  } catch (err) {
+    console.error("[email] Failed to send:", err.message || err);
+    throw err;
+  }
 }
 
 module.exports = { sendReceiptEmail, buildReceiptHTML };

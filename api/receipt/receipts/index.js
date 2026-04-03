@@ -6,6 +6,7 @@ const {
   parseDateInput,
 } = require("../_utils");
 const { getSession } = require("../_auth");
+const { sendReceiptEmail } = require("../_email");
 
 function requireSession(req, res) {
   const session = getSession(req);
@@ -87,6 +88,11 @@ module.exports = async function handler(req, res) {
         return;
       }
 
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailAddress)) {
+        sendJson(res, 400, { error: "Please provide a valid email address." });
+        return;
+      }
+
       const receiptDate = parseDateInput(body.receiptDate);
       const formattedDate = receiptDate.toISOString().slice(0, 10);
       const combinedCompany = [companyRep, companyRep2]
@@ -128,7 +134,9 @@ module.exports = async function handler(req, res) {
         ]
       );
 
-      sendJson(res, 201, { ok: true, receipt: result.rows[0] });
+      const created = result.rows[0];
+      sendJson(res, 201, { ok: true, receipt: created });
+      process.nextTick(() => sendReceiptEmail(created).catch(() => {}));
     } catch (error) {
       sendJson(res, 500, { error: "Failed to create receipt." });
     }

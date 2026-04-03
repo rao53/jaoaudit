@@ -112,6 +112,30 @@ printBtn.addEventListener("click", () => {
   window.print();
 });
 
+const deleteBtn = document.getElementById("delete-btn");
+
+deleteBtn.addEventListener("click", async () => {
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get("id");
+  if (!id) return;
+
+  if (!confirm("Delete this receipt? This cannot be undone.")) return;
+
+  try {
+    const response = await fetch(`/api/receipt/receipts/${id}`, {
+      method: "DELETE",
+    });
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}));
+      alert(data.error || "Failed to delete receipt.");
+      return;
+    }
+    window.location.href = "/receipt/dashboard.html";
+  } catch {
+    alert("Unable to connect. Please check your network and try again.");
+  }
+});
+
 (async () => {
   await ensureAuth();
   await loadReceipt();

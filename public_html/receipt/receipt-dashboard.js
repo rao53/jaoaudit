@@ -73,26 +73,51 @@ function splitLines(value) {
   return [parts[0] || "", parts.slice(1).join("\n").trim()];
 }
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const AMOUNT_RE = /^[A-Za-z₦$€£]*\s*[\d,]+(\.\d{1,2})?$/;
+
+function setFieldError(field, message) {
+  const group = field.closest(".form-group");
+  field.classList.add("field-error");
+  if (group && !group.querySelector(".field-hint")) {
+    const hint = document.createElement("span");
+    hint.className = "field-hint";
+    hint.textContent = message;
+    group.appendChild(hint);
+  }
+}
+
+function clearFieldError(field) {
+  field.classList.remove("field-error");
+  const hint = field.closest(".form-group")?.querySelector(".field-hint");
+  if (hint) hint.remove();
+}
+
 function validateForm() {
   let valid = true;
+
   const required = form.querySelectorAll("[required]");
   required.forEach((field) => {
-    const group = field.closest(".form-group");
     if (!field.value.trim()) {
-      field.classList.add("field-error");
-      if (group && !group.querySelector(".field-hint")) {
-        const hint = document.createElement("span");
-        hint.className = "field-hint";
-        hint.textContent = "This field is required";
-        group.appendChild(hint);
-      }
+      setFieldError(field, "This field is required");
       valid = false;
     } else {
-      field.classList.remove("field-error");
-      const hint = group?.querySelector(".field-hint");
-      if (hint) hint.remove();
+      clearFieldError(field);
     }
   });
+
+  const emailField = form.emailAddress;
+  if (emailField.value.trim() && !EMAIL_RE.test(emailField.value.trim())) {
+    setFieldError(emailField, "Please enter a valid email address");
+    valid = false;
+  }
+
+  const amountField = form.amountInvolved;
+  if (amountField.value.trim() && !AMOUNT_RE.test(amountField.value.trim())) {
+    setFieldError(amountField, "Please enter a valid amount (e.g. 50,000 or ₦50,000.00)");
+    valid = false;
+  }
+
   return valid;
 }
 
@@ -156,6 +181,14 @@ function renderReceiptCard(receipt) {
   link.href = `/receipt/receipt.html?id=${receipt.receipt_id}`;
   link.textContent = "View \u2192";
   actions.appendChild(link);
+
+  const delBtn = document.createElement("button");
+  delBtn.className = "btn-delete";
+  delBtn.textContent = "Delete";
+  delBtn.addEventListener("click", () =>
+    deleteReceipt(receipt.receipt_id, receipt.receipt_number)
+  );
+  actions.appendChild(delBtn);
 
   card.appendChild(info);
   card.appendChild(actions);
@@ -273,6 +306,28 @@ function applyFilter() {
   renderList(filtered);
 }
 
+async function deleteReceipt(id, number) {
+  if (!confirm(`Delete receipt #${number}? This cannot be undone.`)) return;
+
+  try {
+    const response = await fetch(`/api/receipt/receipts/${id}`, {
+      method: "DELETE",
+    });
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}));
+      showError(data.error || "Failed to delete receipt.");
+      return;
+    }
+    allReceipts = allReceipts.filter((r) => r.receipt_id !== id);
+    totalReceipts = Math.max(0, totalReceipts - 1);
+    applyFilter();
+    renderFooter();
+    showToast(`Receipt #${number} deleted.`);
+  } catch {
+    showError("Unable to connect. Please check your network and try again.");
+  }
+}
+
 searchInput.addEventListener("input", applyFilter);
 
 form.addEventListener("submit", async (event) => {
@@ -313,13 +368,14 @@ form.addEventListener("submit", async (event) => {
     }
 
     const data = await response.json();
+    const email = payload.emailAddress;
     form.reset();
     form.receiptDate.value = todayISO();
     searchInput.value = "";
-    showToast(
-      `Receipt #${data.receipt.receipt_number} created.`,
-      `/receipt/receipt.html?id=${data.receipt.receipt_id}`
-    );
+    const toastMsg = email
+      ? `Receipt #${data.receipt.receipt_number} created. Emailed to ${email}.`
+      : `Receipt #${data.receipt.receipt_number} created.`;
+    showToast(toastMsg, `/receipt/receipt.html?id=${data.receipt.receipt_id}`);
     await loadReceipts();
   } catch {
     showError("Unable to connect. Please check your network and try again.");

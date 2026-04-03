@@ -160,8 +160,14 @@ module.exports = async function handler(req, res) {
       );
 
       const created = result.rows[0];
+
+      try {
+        await sendReceiptEmail(created);
+      } catch (err) {
+        console.error("[email] Send failed:", err.message || err);
+      }
+
       sendJson(res, 201, { ok: true, receipt: created });
-      process.nextTick(() => sendReceiptEmail(created).catch(() => {}));
     } catch (error) {
       sendJson(res, 500, { error: "Failed to create receipt." });
     }

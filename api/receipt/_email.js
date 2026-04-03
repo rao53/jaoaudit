@@ -43,6 +43,10 @@ function buildReceiptHTML(r) {
       <table style="width:100%;border-collapse:collapse;font-size:14px">
         ${tableRows}
       </table>
+      <div style="margin-top:24px;text-align:right">
+        <img src="https://www.jaoaudit.com/receiptApp/images/signs.jpg" alt="Authorized Signature" height="80" style="display:inline-block" />
+        <p style="margin:4px 0 0;font-size:13px;color:#696969;font-style:italic">Authorized Signatory</p>
+      </div>
       <p style="margin-top:24px;font-size:13px;color:#696969;font-style:italic">
         This is an automated receipt from J.A. Olawin &amp; Co. Receipt Management System.
       </p>

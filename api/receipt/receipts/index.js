@@ -23,27 +23,43 @@ module.exports = async function handler(req, res) {
   }
 
   if (req.method === "GET") {
-    const limit = Math.min(Number(req.query.limit || 50) || 50, 200);
-    const result = await query(
-      `
-        SELECT
-          receipt_id,
-          receipt_date,
-          received_from,
-          company_rep,
-          email_address,
-          in_the_sum_of,
-          being_payment_for,
-          amount_involved,
-          LPAD(receipt_id::text, 4, '0') AS receipt_number
-        FROM receiptinfo
-        ORDER BY receipt_id DESC
-        LIMIT $1
-      `,
-      [limit]
-    );
+    try {
+      const limit = Math.min(Number(req.query.limit || 20) || 20, 200);
+      const offset = Math.max(Number(req.query.offset || 0) || 0, 0);
+      const result = await query(
+        `
+          SELECT
+            receipt_id,
+            receipt_date,
+            received_from,
+            company_rep,
+            email_address,
+            in_the_sum_of,
+            being_payment_for,
+            amount_involved,
+            LPAD(receipt_id::text, 4, '0') AS receipt_number
+          FROM receiptinfo
+          ORDER BY receipt_id DESC
+          LIMIT $1 OFFSET $2
+        `,
+        [limit, offset]
+      );
 
-    sendJson(res, 200, { ok: true, receipts: result.rows });
+      const countResult = await query(
+        "SELECT COUNT(*)::int AS total FROM receiptinfo"
+      );
+      const total = countResult.rows[0].total;
+
+      sendJson(res, 200, {
+        ok: true,
+        receipts: result.rows,
+        total,
+        limit,
+        offset,
+      });
+    } catch {
+      sendJson(res, 500, { error: "Failed to load receipts." });
+    }
     return;
   }
 

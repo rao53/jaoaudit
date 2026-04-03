@@ -41,7 +41,8 @@ module.exports = async function handler(req, res) {
       }
 
       sendJson(res, 200, { ok: true, receipt: result.rows[0] });
-    } catch {
+    } catch (err) {
+      console.error("[receipt] Failed to load receipt:", err.message || err);
       sendJson(res, 500, { error: "Failed to load receipt." });
     }
     return;
@@ -60,7 +61,8 @@ module.exports = async function handler(req, res) {
       }
 
       sendJson(res, 200, { ok: true });
-    } catch {
+    } catch (err) {
+      console.error("[delete] Failed to delete receipt:", err.message || err);
       sendJson(res, 500, { error: "Failed to delete receipt." });
     }
     return;
